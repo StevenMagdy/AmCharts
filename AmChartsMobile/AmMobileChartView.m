@@ -11,11 +11,14 @@
 
 @interface AmMobileChartView()
 @property (strong) JSContext *context;
-
+@property (nullable,strong) void (^readyBlock)(AmMobileChartView*);
 @property (assign) BOOL hasSetup;
 @end
 
 @implementation AmMobileChartView
+
+@synthesize readyBlock;
+
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -117,6 +120,11 @@
     }
 }
 
+- (void)drawChartWithCompletionHandler:(void (^)(AmMobileChartView*))handler{
+	readyBlock = handler;
+	[self drawChart];
+}
+
 #pragma mark -
 #pragma mark - Setters
 - (void)setChart:(id)chart
@@ -157,6 +165,11 @@
 
     self.context = [view valueForKeyPath:@"documentView.webView.mainFrame.javaScriptContext"]; // Undocumented access to UIWebView's JSContext
     self.context[@"ios"] = self;
+	
+	if(readyBlock){
+		readyBlock(self);
+		readyBlock = nil;
+	}
 }
 
 #pragma mark -

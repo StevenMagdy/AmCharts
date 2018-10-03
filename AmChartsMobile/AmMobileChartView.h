@@ -39,6 +39,7 @@
  Renders chart by sending JSON chart configuration string to javascript AmCharts.makeChart()
  */
 - (void)drawChart;
+- (void)drawChartWithCompletionHandler:(void (^)(AmMobileChartView*))handler;
 
 
 @end
