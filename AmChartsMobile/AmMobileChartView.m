@@ -53,11 +53,14 @@
         return;
     }
     self.hasSetup = YES;
-    
+	
     self.chartView = [[UIWebView alloc] initWithFrame:self.frame];
     [self addSubview:self.chartView];
     self.chartView.delegate = self;
-    
+	
+	[self.chartView setBackgroundColor:[UIColor clearColor]];
+	[self.chartView setOpaque:NO];
+	
     [self.chartView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self addConstraints:[NSLayoutConstraint
                                constraintsWithVisualFormat:@"H:|-0-[_chartView]-0-|"
