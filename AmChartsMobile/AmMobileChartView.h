@@ -13,7 +13,7 @@
 -(void)amChartsAreReady;
 @end
 
-@interface AmMobileChartView : UIView < UIWebViewDelegate, AmChartViewMobileExport>
+@interface AmMobileChartView : UIView < UIWebViewDelegate, UIGestureRecognizerDelegate, AmChartViewMobileExport>
 
 /**
  The UIWebView that handles drawing the chart

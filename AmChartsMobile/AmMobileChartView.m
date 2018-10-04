@@ -11,8 +11,9 @@
 
 @interface AmMobileChartView()
 @property (strong) JSContext *context;
-@property (nullable,strong) void (^readyBlock)(AmMobileChartView*);
+@property (nullable, strong) void (^readyBlock)(AmMobileChartView*);
 @property (assign) BOOL hasSetup;
+@property (nonnull, strong) NSString* selectedCountry;
 @end
 
 @implementation AmMobileChartView
@@ -52,8 +53,9 @@
     if (_hasSetup) {
         return;
     }
+
     self.hasSetup = YES;
-	
+	_selectedCountry = @"";
     self.chartView = [[UIWebView alloc] initWithFrame:self.frame];
     [self addSubview:self.chartView];
     self.chartView.delegate = self;
@@ -87,6 +89,10 @@
     
     NSURL *localURL = [NSURL fileURLWithPath:self.templateFilepath];
     [self.chartView loadHTMLString:[NSString stringWithContentsOfFile:self.templateFilepath encoding:NSUTF8StringEncoding error:nil] baseURL:localURL];
+	
+	UITapGestureRecognizer *tapper = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTap:)];
+	tapper.delegate = self;
+	[_chartView addGestureRecognizer: tapper];
 }
 
 - (void)awakeFromNib
@@ -101,6 +107,11 @@
         self.hasSetup = NO;
         [self setup];
     }
+}
+
+- (void)didTap:(UITapGestureRecognizer *)tapGestureRecognizer
+{
+	[_chartView stringByEvaluatingJavaScriptFromString:@"getSelectedObject();"];
 }
 
 - (void)drawChart
@@ -174,7 +185,20 @@
 		readyBlock = nil;
 	}
 }
-
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
+	if ([[[request URL] scheme] isEqualToString:@"myapp"]) {
+		NSString *currentCountry = [[request URL] lastPathComponent];
+		if (currentCountry && ![currentCountry isEqualToString:_selectedCountry]) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"selectedMapCountryChanged" object:currentCountry];
+			_selectedCountry = currentCountry;
+		}
+		return NO;
+	}
+	return YES;
+}
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
+	return YES;
+}
 #pragma mark -
 #pragma mark - Layout / Resizing
 /**

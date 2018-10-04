@@ -40,6 +40,13 @@
 			function generateChartWithJSONData(json) {
 				chart = AmCharts.makeChart("chartdiv", json);
 			}
+			function getSelectedObject() {
+				var selectedCountry;
+				try { selectedCountry = chart.selectedObject.id; }catch(e){}
+				if (typeof selectedCountry != 'undefined'){
+					window.location.href = "myapp://selectedCountry/" + selectedCountry;
+				}
+			}
 			
 		</script>
 	</head>
