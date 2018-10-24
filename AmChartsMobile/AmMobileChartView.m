@@ -13,7 +13,6 @@
 @property (strong) JSContext *context;
 @property (nullable, strong) void (^readyBlock)(AmMobileChartView*);
 @property (assign) BOOL hasSetup;
-@property (nonnull, strong) NSString* selectedCountry;
 @end
 
 @implementation AmMobileChartView
@@ -55,7 +54,6 @@
     }
 
     self.hasSetup = YES;
-	_selectedCountry = @"";
     self.chartView = [[UIWebView alloc] initWithFrame:self.frame];
     [self addSubview:self.chartView];
     self.chartView.delegate = self;
@@ -188,10 +186,7 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
 	if ([[[request URL] scheme] isEqualToString:@"myapp"]) {
 		NSString *currentCountry = [[request URL] lastPathComponent];
-		if (currentCountry && ![currentCountry isEqualToString:_selectedCountry]) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"selectedMapCountryChanged" object:currentCountry];
-			_selectedCountry = currentCountry;
-		}
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"selectedMapCountry" object:currentCountry];
 		return NO;
 	}
 	return YES;
